@@ -1,23 +1,54 @@
+use std::io::{self, BufRead};
+
 type Board = [[u8; 8]; 8];
 
 fn main() {
-    let player = 1;
+    let (board, player) = read_board();
+    let new_board = solve(board, player);
+    print_board(new_board);
+    println!("{}", format_whatever(player));
+}
+
+fn read_board() -> (Board, u8) {
+    let stdin = io::stdin();
+    let mut iter = stdin.lock().lines();
     let mut board: Board = [[0u8; 8]; 8];
-    board[3][3] = 1;
-    board[3][4] = 2;
-    board[4][3] = 2;
-    board[4][4] = 1;
-    print_board(board);
-    println!("");
-    print_board(solve(board, player));
+    for line in 0..board.len() {
+        let input = iter.next().unwrap().unwrap();
+        let mut chars = input.chars();
+        for column in 0..board[line].len() {
+            board[line][column] = parse_char(chars.next().unwrap());
+        }
+    }
+    let player_vec: Vec<char> =
+        iter.next().unwrap().unwrap().chars().collect();
+    let player = parse_char(player_vec[0]);
+    return (board, player)
+}
+
+fn parse_char(ch: char) -> u8 {
+    return match ch {
+        'B' => 1,
+        'W' => 2,
+        _   => 0,
+    }
 }
 
 fn print_board(board: Board) {
     for line in 0..board.len() {
         for column in 0..board[line].len() {
-            print!("{} ", board[line][column])
+            print!("{} ", format_whatever(board[line][column]))
         }
         println!("")
+    }
+}
+
+fn format_whatever(x: u8) -> char {
+    return match x {
+        1 => 'B',
+        2 => 'W',
+        3 => '0',
+        _ => '.',
     }
 }
 
@@ -68,9 +99,9 @@ fn is_in_bounds(board: Board, pos: (i8, i8)) -> bool {
 }
 
 fn opposite_player(player: u8) -> u8 {
-     match player {
-        1 => return 2,
-        _ => return 1
+     return match player {
+        1 => 2,
+        _ => 1
      }
 }
 
