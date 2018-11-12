@@ -12,50 +12,59 @@ fn main() {
     print_board(solve(board, player));
 }
 
-fn pri8_board(board: Board) {
+fn print_board(board: Board) {
     for line in 0..board.len() {
         for column in 0..board[line].len() {
-            pri8!("{} ", board[line][column])
+            print!("{} ", board[line][column])
         }
-        pri8ln!("")
+        println!("")
     }
 }
 
 fn solve(board: Board, player: u8) -> Board {
+    let mut new_board = board;
     for line in 0..board.len() {
         for column in 0..board[line].len() {
             if board[line][column] != player {
                 continue
             }
-            find_move_up(board, line, column);
+            new_board = mark_move(new_board, find_move(board, line, column, ( 1, 0)));
+            new_board = mark_move(new_board, find_move(board, line, column, (-1, 0)));
+            new_board = mark_move(new_board, find_move(board, line, column, (0,  1)));
+            new_board = mark_move(new_board, find_move(board, line, column, (0, -1)));
         }
     }
-    return board
+    return new_board
 }
 
-fn find_move_up(board: Board, line: usize, column: usize, direction: (i8, i8)) -> Option<(u8, u8)> {
+fn find_move(board: Board, line: usize, column: usize,
+             dir: (i8, i8)) -> Option<(u8, u8)>
+{
     let player = board[line][column];
-    let mut current_pos = (line as i8, column as i8);
-    while true {
-        _pos = (current_pos.0 + dir.0, current_pos.1 + dir.1);
-        if !is_in_bounds(board, current_pos) {
+    let mut pos = (line as i8, column as i8);
+    let mut moves = 0;
+    loop {
+        pos = (pos.0 + dir.0, pos.1 + dir.1);
+        if !is_in_bounds(board, pos) {
+            return None;
+        }
+        moves = moves + 1;
+        let current = board[pos.0 as usize][pos.1 as usize];
+        if moves == 1 && current != opposite_player(player) {
+            return None;
+        }
+        if current == 0 {
+            return Some((pos.0 as u8, pos.1 as u8))
+        }
+        if current != opposite_player(player) {
             return None;
         }
     }
-    for x in line - 2..0 {
-        if board[x][column] == player {
-            break;
-        }
-        if board[x][column] == 0 {
-            return Some((x as u8, column as u8));
-        }
-    }
-    return None;
 }
 
 fn is_in_bounds(board: Board, pos: (i8, i8)) -> bool {
-    return pos.0 >= 0 && pos.0 < board.len()
-        && pos.1 >= 0 && pos.1 < board[0].len();
+    return pos.0 >= 0 && pos.0 < board.len() as i8
+        && pos.1 >= 0 && pos.1 < board[0].len() as i8;
 }
 
 fn opposite_player(player: u8) -> u8 {
@@ -63,4 +72,15 @@ fn opposite_player(player: u8) -> u8 {
         1 => return 2,
         _ => return 1
      }
+}
+
+fn mark_move(board: Board, mv: Option<(u8, u8)>) -> Board {
+    match mv {
+        None => return board,
+        Some((y, x)) => {
+            let mut b = board;
+            b[y as usize][x as usize] = 3;
+            return b;
+        }
+    }
 }
