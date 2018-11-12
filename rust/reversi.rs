@@ -63,6 +63,10 @@ fn solve(board: Board, player: u8) -> Board {
             new_board = mark_move(new_board, find_move(board, line, column, (-1, 0)));
             new_board = mark_move(new_board, find_move(board, line, column, (0,  1)));
             new_board = mark_move(new_board, find_move(board, line, column, (0, -1)));
+            new_board = mark_move(new_board, find_move(board, line, column, ( 1,  1)));
+            new_board = mark_move(new_board, find_move(board, line, column, (-1, -1)));
+            new_board = mark_move(new_board, find_move(board, line, column, (-1,  1)));
+            new_board = mark_move(new_board, find_move(board, line, column, ( 1, -1)));
         }
     }
     return new_board
