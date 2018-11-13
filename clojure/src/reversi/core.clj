@@ -20,28 +20,23 @@
 
 (defn legal-move [board dot-x dot-y player]
   (when (= \. (r board dot-x dot-y))
-    (let [neighbours (filter (fn [[a b]]
-                               (and (valid-index? a)
-                                    (valid-index? b)))
-                             [[(dec dot-x) dot-y]
-                              [dot-x (dec dot-y)]
-                              [(inc dot-x) dot-y]
-                              [dot-x (inc dot-y)]])
-          enemies (filter (fn [[enemy-x enemy-y]]
-                            (= (opposite player) (r board enemy-x enemy-y))) neighbours)
-          allies (map (fn [[enemy-x enemy-y]]
-                        (for [ally-x (condp = enemy-x
-                                       dot-x       (repeat enemy-x)
-                                       (dec dot-x) (range 1 enemy-x)
-                                       (inc dot-x) (range enemy-x 9))
-                              ally-y (condp = enemy-y
-                                       dot-y (repeat enemy-y)
-                                       (dec dot-y) (range 1 enemy-y)
-                                       (inc dot-y) (range enemy-y 9))
-                              :when (= player (r board ally-x ally-y))]
-                          true))
-                      enemies)]
-      (first allies))))
+    (first (for [[enemy-x enemy-y] [[(dec dot-x) dot-y]
+                                    [dot-x       (dec dot-y)]
+                                    [(inc dot-x) dot-y]
+                                    [dot-x       (inc dot-y)]]
+                 :when (and (valid-index? enemy-x)
+                            (valid-index? enemy-y)
+                            (= (opposite player) (r board enemy-x enemy-y)))]
+             (for [ally-x (condp = enemy-x
+                            dot-x       (repeat enemy-x)
+                            (dec dot-x) (range 1 enemy-x)
+                            (inc dot-x) (range enemy-x 9))
+                   ally-y (condp = enemy-y
+                            dot-y (repeat enemy-y)
+                            (dec dot-y) (range 1 enemy-y)
+                            (inc dot-y) (range enemy-y 9))
+                   :when (= player (r board ally-x ally-y))]
+               true)))))
 
 (defn legal-moves [board player]
   (for [x (range 1 9)
