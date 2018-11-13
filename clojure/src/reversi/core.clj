@@ -43,6 +43,6 @@
   (for [x (range 1 9)
         y (range 1 9)
         :when (legal-move board x y player)]
-    [x y]))
+    (str (nth "ABCDEFGH" (dec x)) y)))
 
 (println (legal-moves board \B))
