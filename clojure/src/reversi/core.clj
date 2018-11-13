@@ -18,23 +18,23 @@
 (defn opposite [c]
   (if (= c \B) \W \B))
 
-(defn legal-move [board dot-x dot-y player]
-  (when (= \. (r board dot-x dot-y))
-    (first (for [[enemy-x enemy-y] [[(dec dot-x) dot-y]
-                                    [dot-x       (dec dot-y)]
-                                    [(inc dot-x) dot-y]
-                                    [dot-x       (inc dot-y)]]
+(defn legal-move [board x y player]
+  (when (= \. (r board x y))
+    (first (for [[enemy-x enemy-y] [[(dec x)      y ]
+                                    [     x  (dec y)]
+                                    [(inc x)      y ]
+                                    [     x  (inc y)]]
                  :when (and (valid-index? enemy-x)
                             (valid-index? enemy-y)
                             (= (opposite player) (r board enemy-x enemy-y)))]
-             (for [flank-x (condp = enemy-x
-                            dot-x       (repeat enemy-x)
-                            (dec dot-x) (range 1 enemy-x)
-                            (inc dot-x) (range enemy-x 9))
-                   flank-y (condp = enemy-y
-                            dot-y (repeat enemy-y)
-                            (dec dot-y) (range 1 enemy-y)
-                            (inc dot-y) (range enemy-y 9))
+             (for [[flank-x flank-y] [(condp = enemy-x
+                                                   x  (repeat enemy-x)
+                                              (dec x) (range 1 enemy-x)
+                                              (inc x) (range enemy-x 9))
+                                      (condp = enemy-y
+                                                   y  (repeat enemy-y)
+                                              (dec y) (range 1 enemy-y)
+                                              (inc y) (range enemy-y 9))]
                    :while (not= player (r board flank-x flank-y))]
                true)))))
 
