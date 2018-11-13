@@ -18,8 +18,9 @@
 (defn opposite [c]
   (if (= c \B) \W \B))
 
-(defn neighbours [board [dot-x dot-y] player]
-  (let [candidates (filter (fn [[a b]]
+(defn legal-move [board dot-x dot-y player]
+  (when (= \. (r board dot-x dot-y))
+    (let [neighbours (filter (fn [[a b]]
                              (and (valid-index? a)
                                   (valid-index? b)))
                            [[(dec dot-x) dot-y]
@@ -27,7 +28,7 @@
                             [(inc dot-x) dot-y]
                             [dot-x (inc dot-y)]])
         enemies (filter (fn [[enemy-x enemy-y]]
-                          (= (opposite player) (r board enemy-x enemy-y))) candidates)
+                          (= (opposite player) (r board enemy-x enemy-y))) neighbours)
         allies (map (fn [[enemy-x enemy-y]]
                       (let [[a b] (cond
                                     (and (= dot-x enemy-x) (= (dec dot-y) enemy-y)) [(repeat enemy-x) (range 1 enemy-y)]
@@ -36,13 +37,12 @@
                                     (and (= dot-y enemy-y) (= (inc dot-x) enemy-x)) [(range enemy-x 9) (repeat enemy-y)])]
                         (filter #{player} (map #(r board %1 %2) a b))))
                     enemies)]
-    (first allies)))
+    (first allies))))
 
 (defn legal-moves [board player]
-  (let [dots (for [x (range 1 9)
-                   y (range 1 9)
-                   :when (= \. (r board x y))]
-               [x y])]
-    (filter #(neighbours board % player) dots)))
+  (for [x (range 1 9)
+        y (range 1 9)
+        :when (legal-move board x y player)]
+    [x y]))
 
 (println (legal-moves board \B))
