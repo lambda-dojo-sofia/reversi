@@ -18,25 +18,25 @@
 (defn opposite [c]
   (if (= c \B) \W \B))
 
-(defn neighbours [board [x y] player]
-  (let [candidates (filter (fn [[[a b] v]]
+(defn neighbours [board [dot-x dot-y] player]
+  (let [candidates (filter (fn [[a b]]
                              (and (valid-index? a)
                                   (valid-index? b)))
-                           {[(dec x) y] :left
-                            [x (dec y)] :up
-                            [(inc x) y] :right
-                            [x (inc y)] :down})
-        enemies (filter (fn [[[x y] direction]]
-                          (= (opposite player) (r board x y))) candidates)
-        allies (map (fn [[[x y] direction]]
-                      (let [[a b] (condp = direction
-                                    :up    [(repeat x) (range 1 y)]
-                                    :down  [(repeat x) (range y 9)]
-                                    :left  [(range 1 x) (repeat y)]
-                                    :right [(range x 9) (repeat y)])]
-                        (some #{player} (map #(r board %1 %2) a b))))
+                           [[(dec dot-x) dot-y]
+                            [dot-x (dec dot-y)]
+                            [(inc dot-x) dot-y]
+                            [dot-x (inc dot-y)]])
+        enemies (filter (fn [[enemy-x enemy-y]]
+                          (= (opposite player) (r board enemy-x enemy-y))) candidates)
+        allies (map (fn [[enemy-x enemy-y]]
+                      (let [[a b] (cond
+                                    (and (= dot-x enemy-x) (= (dec dot-y) enemy-y)) [(repeat enemy-x) (range 1 enemy-y)]
+                                    (and (= dot-x enemy-x) (= (inc dot-y) enemy-y)) [(repeat enemy-x) (range enemy-y 9)]
+                                    (and (= dot-y enemy-y) (= (dec dot-x) enemy-x)) [(range 1 enemy-x) (repeat enemy-y)]
+                                    (and (= dot-y enemy-y) (= (inc dot-x) enemy-x)) [(range enemy-x 9) (repeat enemy-y)])]
+                        (filter #{player} (map #(r board %1 %2) a b))))
                     enemies)]
-    (not (empty? allies))))
+    (first allies)))
 
 (defn legal-moves [board player]
   (let [dots (for [x (range 1 9)
