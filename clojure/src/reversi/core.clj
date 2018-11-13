@@ -12,12 +12,6 @@
 
 (defn r [board x y] (nth (nth board (dec x)) (dec y)))
 
-(defn coords [c]
-  (for [x (range 1 9)
-        y (range 1 9)
-        :when (= c (r board x y))]
-    [x y]))
-
 (defn valid-index? [n]
   (<= 1 n 8))
 
@@ -45,7 +39,10 @@
     (not (empty? allies))))
 
 (defn legal-moves [board player]
-  (let [dots (coords \.)]
+  (let [dots (for [x (range 1 9)
+                   y (range 1 9)
+                   :when (= \. (r board x y))]
+               [x y])]
     (filter #(neighbours board % (opposite player)) dots)))
 
 (println (legal-moves board "B"))
