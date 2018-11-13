@@ -27,15 +27,15 @@
                  :when (and (valid-index? enemy-x)
                             (valid-index? enemy-y)
                             (= (opposite player) (r board enemy-x enemy-y)))]
-             (for [ally-x (condp = enemy-x
+             (for [flank-x (condp = enemy-x
                             dot-x       (repeat enemy-x)
                             (dec dot-x) (range 1 enemy-x)
                             (inc dot-x) (range enemy-x 9))
-                   ally-y (condp = enemy-y
+                   flank-y (condp = enemy-y
                             dot-y (repeat enemy-y)
                             (dec dot-y) (range 1 enemy-y)
                             (inc dot-y) (range enemy-y 9))
-                   :when (= player (r board ally-x ally-y))]
+                   :while (not= player (r board flank-x flank-y))]
                true)))))
 
 (defn legal-moves [board player]
