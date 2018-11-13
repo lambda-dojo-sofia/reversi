@@ -43,6 +43,6 @@
                    y (range 1 9)
                    :when (= \. (r board x y))]
                [x y])]
-    (filter #(neighbours board % (opposite player)) dots)))
+    (filter #(neighbours board % player) dots)))
 
-(println (legal-moves board "B"))
+(println (legal-moves board \B))
