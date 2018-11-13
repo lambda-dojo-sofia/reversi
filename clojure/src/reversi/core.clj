@@ -30,11 +30,14 @@
           enemies (filter (fn [[enemy-x enemy-y]]
                             (= (opposite player) (r board enemy-x enemy-y))) neighbours)
           allies (map (fn [[enemy-x enemy-y]]
-                        (for [[ally-x ally-y] (cond
-                                                (and (= dot-x enemy-x) (= (dec dot-y) enemy-y)) [(repeat enemy-x) (range 1 enemy-y)]
-                                                (and (= dot-x enemy-x) (= (inc dot-y) enemy-y)) [(repeat enemy-x) (range enemy-y 9)]
-                                                (and (= dot-y enemy-y) (= (dec dot-x) enemy-x)) [(range 1 enemy-x) (repeat enemy-y)]
-                                                (and (= dot-y enemy-y) (= (inc dot-x) enemy-x)) [(range enemy-x 9) (repeat enemy-y)])
+                        (for [ally-x (condp = enemy-x
+                                       dot-x       (repeat enemy-x)
+                                       (dec dot-x) (range 1 enemy-x)
+                                       (inc dot-x) (range enemy-x 9))
+                              ally-y (condp = enemy-y
+                                       dot-y (repeat enemy-y)
+                                       (dec dot-y) (range 1 enemy-y)
+                                       (inc dot-y) (range enemy-y 9))
                               :when (= player (r board ally-x ally-y))]
                           true))
                       enemies)]
