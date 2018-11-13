@@ -10,16 +10,16 @@
    "........"
    "........"])
 
-(defn r [board x y] (nth (nth board x) y))
+(defn r [board x y] (nth (nth board (dec x)) (dec y)))
 
 (defn coords [c]
-  (for [x (range 0 8)
-        y (range 0 8)
-        :when (= c (nth (nth board x) y))]
+  (for [x (range 1 9)
+        y (range 1 9)
+        :when (= c (r board x y))]
     [x y]))
 
 (defn valid-index? [n]
-  (<= 0 n 7))
+  (<= 1 n 8))
 
 (defn opposite [c]
   (if (= c \B) \W \B))
@@ -36,10 +36,10 @@
                           (= (opposite player) (r board x y))) candidates)
         allies (map (fn [[[x y] direction]]
                       (let [[a b] (condp = direction
-                                    :up    [(repeat x) (range 0 y)]
-                                    :down  [(repeat x) (range y 8)]
-                                    :left  [(range 0 x) (repeat y)]
-                                    :right [(range x 8) (repeat y)])]
+                                    :up    [(repeat x) (range 1 y)]
+                                    :down  [(repeat x) (range y 9)]
+                                    :left  [(range 1 x) (repeat y)]
+                                    :right [(range x 9) (repeat y)])]
                         (some #{player} (map #(r board %1 %2) a b))))
                     enemies)]
     (not (empty? allies))))
