@@ -6,7 +6,7 @@ The repository contains several [Reversi](https://en.wikipedia.org/wiki/Reversi)
 
 * [Clojure](https://github.com/lambda-dojo-sofia/reversi/tree/master/clojure)
 * [Rust](https://github.com/lambda-dojo-sofia/reversi/tree/master/rust)
-* Haskell (soon)
+* [Haskell](https://github.com/lambda-dojo-sofia/reversi/tree/master/haskell)
 
 ## License
 
